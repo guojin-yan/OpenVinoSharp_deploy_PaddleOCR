@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     public class OcrConfig 
     {
@@ -17,6 +17,7 @@ namespace PaddleOCR
             public long[] input_size = new long[] { 1, 3, 960, 960 };
             public bool is_scale = true;
             public bool use_gpu = false;
+            public bool is_dynamic = false;
             public float det_db_thresh = 0.3f;
             public float det_db_box_thresh = 0.5f;
             public int limit_side_len = 960;
@@ -34,6 +35,7 @@ namespace PaddleOCR
             public long[] input_size = new long[] { 1, 3, 48, 192 };
             public bool is_scale = true;
             public bool use_gpu = false;
+            public bool is_dynamic = true;
             public float cls_thresh = 0.9f;
             public int batch_num = 1;
         }
@@ -48,6 +50,7 @@ namespace PaddleOCR
             public long[] input_size = new long[] { 1, 3, 48, 320 };
             public bool is_scale = true;
             public bool use_gpu = false;
+            public bool is_dynamic = true;
             public int batch_num = 1;
         }
         public RecOption rec_option;
@@ -97,18 +100,31 @@ namespace PaddleOCR
             strulayrec_option = new StruLayRecOption();
         }
 
+        public OcrConfig(OcrModel model) 
+        {
+            det_option = new DetOption();
+            cls_option = new ClsOption();
+            rec_option = new RecOption();
+            strutabrec_option = new StruTabRecOption();
+            strulayrec_option = new StruLayRecOption();
+            det_model_path = model.det_model_path;
+            cls_model_path= model.cls_model_path;
+            rec_model_path = model.rec_model_path;
+            rec_option.label_path = model.dict_path;
+        }
         public void set_det_option(DetOption op) => det_option = op;
         public void set_cls_option(ClsOption op) => cls_option = op;
         public void set_rec_option(RecOption op) => rec_option = op;
         public void set_table_option(StruTabRecOption op) => strutabrec_option = op;
         public void set_layout_option(StruLayRecOption op) => strulayrec_option = op;
-
-        public void set_dict_path(string path) 
-        {
-            rec_option.label_path = Path.Combine(path, rec_option.label_path);
-            strulayrec_option.label_path = Path.Combine(path, strulayrec_option.label_path);
-            strutabrec_option.label_path = Path.Combine(path, strutabrec_option.label_path);
-        }
+        public void set_rec_dict_path(string path) => rec_option.label_path = path;
+        public void set_table_dict_path(string path) => strutabrec_option.label_path = path;
+        public void set_layout_dict_path(string path) => strulayrec_option.label_path = path;
+        public void set_det_model_path(string path) => det_model_path = path;
+        public void set_cls_model_path(string path) => cls_model_path = path;
+        public void set_rec_model_path(string path) => rec_model_path = path;
+        public void set_table_model_path(string path) => table_rec_model_path = path;
+        public void set_layout_model_path(string path) => strulay_rec_model_path = path;
     };
 
     public static class RuntimeOption
@@ -122,6 +138,7 @@ namespace PaddleOCR
             public static long[] input_size = new long[] { 1, 3, 960, 960 };
             public static bool is_scale = true;
             public static bool use_gpu = false;
+            public static bool is_dynamic = false;
             public static float det_db_thresh = 0.3f;
             public static float det_db_box_thresh = 0.5f;
             public static int limit_side_len = 960;
@@ -139,6 +156,7 @@ namespace PaddleOCR
             public static long[] input_size = new long[] { 1, 3, 48, 192 };
             public static bool is_scale = true;
             public static bool use_gpu = false;
+            public static bool is_dynamic = true;
             public static float cls_thresh = 0.9f;
             public static int batch_num = 1;
         }
@@ -153,6 +171,7 @@ namespace PaddleOCR
             public static long[] input_size = new long[] { 1, 3, 48, 320 };
             public static bool is_scale = true;
             public static bool use_gpu = false;
+            public static bool is_dynamic = true;
             public static int batch_num = 1;
         }
         public static class StruTabRecOption
