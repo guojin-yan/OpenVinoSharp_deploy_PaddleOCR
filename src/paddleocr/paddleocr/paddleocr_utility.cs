@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
-using OpenVinoSharp.Extensions.Utility;
 using static System.Net.Mime.MediaTypeNames;
 using static OpenCvSharp.FileStorage;
 using Point = OpenCvSharp.Point;
 using Size = OpenCvSharp.Size;
-namespace PaddleOCR
+using System.IO;
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
 
     public class OCRPredictResult
@@ -47,6 +49,47 @@ namespace PaddleOCR
 
     public class PaddleOcrUtility
     {
+        public static bool chech_path(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                Console.WriteLine(path + " 已存在");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine(path + "不存在");
+                return false;
+            }
+        }
+
+        public static bool chech_file(string path)
+        {
+            if (File.Exists(path))
+            {
+                Console.WriteLine(path + " 已存在");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine(path + "不存在");
+                return false;
+            }
+        }
+
+        public static T Clone<T>(T RealObject)
+        {
+            using (Stream objectStream = new MemoryStream())
+            {
+                //利用 System.Runtime.Serialization序列化与反序列化完成引用对象的复制
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(objectStream, RealObject);
+                objectStream.Seek(0, SeekOrigin.Begin);
+                return (T)formatter.Deserialize(objectStream);
+            }
+        }
+
+
         public static List<string> read_dict(string path)
         {
             List<string> list = new List<string>();
@@ -179,7 +222,7 @@ namespace PaddleOCR
         public static Mat get_rotate_crop_image(Mat srcimage, List<List<int>> box)
         {
             Mat image = srcimage.Clone();
-            List<List<int>> points = Utility.Clone<List<List<int>>>(box);
+            List<List<int>> points = PaddleOcrUtility.Clone<List<List<int>>>(box);
 
             List<int> x_collect = new List<int> { box[0][0], box[1][0], box[2][0], box[3][0] };
             List<int> y_collect = new List<int> { box[0][1], box[1][1], box[2][1], box[3][1] };
