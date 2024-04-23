@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     public class Predictor : IDisposable
     {
@@ -16,6 +16,7 @@ namespace PaddleOCR
         protected Model m_model;
         protected CompiledModel m_compiled_model;
         protected InferRequest m_infer_request;
+        protected Shape m_output_shape;
 
         protected bool m_is_scale;
 
@@ -23,23 +24,25 @@ namespace PaddleOCR
         protected float[] m_scale;
 
         protected bool m_use_gpu;
+        protected bool m_is_dynamic;
 
         private bool m_disposed_value;
 
         public Predictor(string model_path, string device, float[] mean, float[] scale, long[] input_size, 
-            bool is_scale=true, bool use_gpu=false) 
+            bool is_scale=true, bool use_gpu=false, bool is_dynamic = true) 
         {
             m_core = new Core();
+            m_core.set_property(device, Ov.cache_dir("./"));
             m_model = m_core.read_model(model_path);
-            if (use_gpu) 
+            if (use_gpu && (!is_dynamic))
             {
-                if (input_size==null)
+                if (input_size == null)
                 {
                     throw new ArgumentNullException("input_size");
                 }
                 m_model.reshape(new PartialShape(new Shape(input_size)));
             }
-                
+
             m_compiled_model = m_core.compile_model(m_model, device);
             m_infer_request = m_compiled_model.create_infer_request();
             m_mean = mean;
@@ -76,12 +79,14 @@ namespace PaddleOCR
             if (m_model.get_outputs_size() > 1)
             {
                 Tensor output_tensor = m_infer_request.get_output_tensor(0);
+                m_output_shape = output_tensor.get_shape();
                 float[] result = output_tensor.get_data<float>((int)output_tensor.get_size());
                 return result;
             }
             else
             {
                 Tensor output_tensor = m_infer_request.get_output_tensor();
+                m_output_shape = output_tensor.get_shape();
                 float[] result = output_tensor.get_data<float>((int)output_tensor.get_size());
                 return result;
             }
