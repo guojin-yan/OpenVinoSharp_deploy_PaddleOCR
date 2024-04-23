@@ -1,6 +1,6 @@
 ﻿using iTextSharp.text.pdf.parser.clipper;
 using OpenCvSharp;
-using PaddleOCR;
+using OpenVinoSharp.Extensions.model.PaddleOCR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     public static class PostProcessor
     {
