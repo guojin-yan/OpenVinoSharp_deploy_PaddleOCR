@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     using rec_opt = RuntimeOption.RecOption;
     public class OcrRec : Predictor
@@ -19,10 +19,11 @@ namespace PaddleOCR
         private int m_rec_batch_num;
 
         public OcrRec(string rec_model, string? device = null, string? label_path = null, bool? use_gpu = null,
-            bool? is_scale = null, float[]? mean = null, float[]? scale = null, long[]? input_size = null,
-            int? batch_num = null)
+            bool? is_dynamic = null, bool? is_scale = null, float[]? mean = null, float[]? scale = null,
+            long[]? input_size = null, int? batch_num = null)
             : base(rec_model, device ?? rec_opt.device, mean ?? rec_opt.mean, scale ?? rec_opt.scale,
-                   input_size ?? rec_opt.input_size, is_scale ?? rec_opt.is_scale, use_gpu ?? rec_opt.use_gpu)
+                   input_size ?? rec_opt.input_size, is_scale ?? rec_opt.is_scale, use_gpu ?? rec_opt.use_gpu,
+                   is_dynamic ?? rec_opt.is_dynamic)
         {
             m_label_list = PaddleOcrUtility.read_dict(label_path ?? rec_opt.label_path);
             m_label_list.Insert(0, "#");
@@ -34,7 +35,7 @@ namespace PaddleOCR
 
         public OcrRec(OcrConfig config)
             : base(config.rec_model_path, config.rec_option.device, config.rec_option.mean, config.rec_option.scale,
-                   config.rec_option.input_size, config.rec_option.is_scale, config.rec_option.use_gpu)
+                   config.rec_option.input_size, config.rec_option.is_scale, config.rec_option.use_gpu, config.rec_option.is_dynamic)
         {
             m_label_list = PaddleOcrUtility.read_dict(config.rec_option.label_path);
             m_label_list.Insert(0, "#");
@@ -97,8 +98,13 @@ namespace PaddleOCR
                 }
                 float[] input_data = PreProcess.permute_batch(norm_img_batch);
 
+                DateTime start = DateTime.Now;
                 float[] predict_batch = infer(input_data, new long[] { batch_num, 3, m_input_size[2], batch_width });
+                DateTime end = DateTime.Now;
+                Console.WriteLine("time: " + (end - start).TotalMilliseconds);
 
+
+                int batch_len = (int)Math.Round((double)(predict_batch.Length / batch_num / m_output_shape.Last<long>()));
                 for (int m = 0; m < m_rec_batch_num; m++)
                 {
                     if (beg_img_no + m >= img_num)
@@ -110,14 +116,13 @@ namespace PaddleOCR
                     int count = 0;
                     float max_value = 0.0f;
 
-                    for (int n = 0; n < (int)Math.Round((double)(predict_batch.Length / 6625)); n++)
+                    int pre_data = (int)(m * batch_len * m_output_shape.Last<long>());
+                    for (int n = 0; n < batch_len; n++)
                     {
-                        float[] res = new float[6625];
-                        Array.Copy(predict_batch, 6625 * n, res, 0, 6625);
+                        float[] res = new float[m_output_shape.Last<long>()];
+                        Array.Copy(predict_batch, m_output_shape.Last<long>() * n + pre_data, res, 0, m_output_shape.Last<long>());
                         // get idx and score
-                        argmax_idx = (int)(PaddleOcrUtility.argmax(res, out score));
-                        // get score
-               
+                        argmax_idx = (int)(PaddleOcrUtility.argmax(res, out max_value));
 
                         if (argmax_idx > 0 && (!(n > 0 && argmax_idx == last_index)))
                         {
@@ -127,7 +132,7 @@ namespace PaddleOCR
                         }
                         last_index = argmax_idx;
                     }
-                    //score /= count;
+                    score /= count;
                     if (score == 0.0f)
                     {
                         continue;
