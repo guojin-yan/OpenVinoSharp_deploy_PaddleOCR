@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PaddleOCR;
 
-namespace OpenVinoSharp.Extensions
+namespace OpenVinoSharp.Extensions.model.PaddleOCR.Pipeline
 {
-    internal class Pipeline
+   
+    
+
+    public class OnlineOcr
     {
+        
     }
 }

@@ -1,20 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>10.0</LangVersion>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;net48;net472</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>PaddleOCR</RootNamespace>
+    <RootNamespace>OpenVinoSharp.Extensions.model.PaddleOCR</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="iTextSharp" Version="5.5.13.3" />
-    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.8.0.20230708" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.8.0.20230708" />
-    <PackageReference Include="OpenVINO.CSharp.API" Version="2023.2.0.2" />
-    <PackageReference Include="OpenVINO.runtime.win" Version="2023.2.0.1" />
-    <PackageReference Include="SharpCompress" Version="0.34.2" />
-    <PackageReference Include="Spire.XLS" Version="13.12.0" />
+    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
+    <PackageReference Include="OpenVINO.CSharp.API" Version="2024.0.0.1" />
+    <PackageReference Include="OpenVINO.CSharp.API.Extensions" Version="1.0.1" />
+    <PackageReference Include="SharpCompress" Version="0.36.0" />
+    <PackageReference Include="Spire.XLS" Version="14.3.3" />
   </ItemGroup>
 
 </Project>
