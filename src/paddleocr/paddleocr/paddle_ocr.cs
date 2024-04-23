@@ -1,7 +1,8 @@
 ﻿using OpenCvSharp;
+using System;
 using System.Collections.Generic;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     public class OCRPredictor
     {
@@ -88,8 +89,6 @@ namespace PaddleOCR
             }
             return ocr_results;
         }
-
-
         public List<OCRPredictResult> rec(List<Mat> img_list, List<OCRPredictResult> ocr_results)
         {
             List<string> rec_texts = new List<string>(new string[img_list.Count]);
@@ -107,11 +106,28 @@ namespace PaddleOCR
         {
             List<OCRPredictResult> ocr_result = new List<OCRPredictResult>();
             // det
-            if (!flag_det)
+            if (det)
             {
-                throw new Exception("The ocrDet is not init!");
+                if (!flag_det)
+                {
+                    throw new Exception("The ocrDet is not init!");
+                }
+                ocr_result = this.det(img, ocr_result);
             }
-            ocr_result = this.det(img, ocr_result);
+            else 
+            {
+                OCRPredictResult re = new OCRPredictResult();
+                int x = img.Size().Width;
+                int y = img.Size().Height;
+                re.box = new List<List<int>> {
+                    new List<int> { 1, 1 },
+                    new List<int> { 1, y-1 },
+                    new List<int> { x-1, 1 },
+                    new List<int> { x-1, y-1 },
+                };
+                ocr_result.Add(re);
+            }
+
 
 
             // crop image
