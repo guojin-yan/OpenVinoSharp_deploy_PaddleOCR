@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     using cls_opt = RuntimeOption.ClsOption;
     public class OcrCls : Predictor
@@ -16,12 +16,13 @@ namespace PaddleOCR
         private int m_cls_batch_num;
         private long[] m_input_size;
 
-        
-        public OcrCls(string cls_model, string? device = null, bool? use_gpu = null, bool? is_scale = null,
-            float[]? mean = null, float[]? scale = null, long[]? input_size = null, float? cls_thresh = null,
-            int? batch_num = null)
+
+        public OcrCls(string cls_model, string? device = null, bool? use_gpu = null, bool? is_dynamic = null,
+            bool? is_scale = null, float[]? mean = null, float[]? scale = null, long[]? input_size = null,
+            float? cls_thresh = null, int? batch_num = null)
              : base(cls_model, device ?? cls_opt.device, mean ?? cls_opt.mean, scale ?? cls_opt.scale,
-                   input_size ?? cls_opt.input_size, is_scale ?? cls_opt.is_scale, use_gpu ?? cls_opt.use_gpu)
+                   input_size ?? cls_opt.input_size, is_scale ?? cls_opt.is_scale, use_gpu ?? cls_opt.use_gpu,
+                   is_dynamic ?? cls_opt.is_dynamic)
         {
             m_cls_batch_num = batch_num ?? cls_opt.batch_num;
             m_cls_thresh = cls_thresh ?? cls_opt.cls_thresh;
@@ -30,7 +31,7 @@ namespace PaddleOCR
 
         public OcrCls(OcrConfig config)
             : base(config.cls_model_path, config.cls_option.device, config.cls_option.mean, config.cls_option.scale,
-                   config.cls_option.input_size, config.cls_option.is_scale, config.cls_option.use_gpu)
+                   config.cls_option.input_size, config.cls_option.is_scale, config.cls_option.use_gpu, config.cls_option.is_dynamic)
         {
             m_cls_batch_num = config.cls_option.batch_num;
             m_cls_thresh = config.cls_option.cls_thresh;
@@ -46,7 +47,6 @@ namespace PaddleOCR
                 if (disposing)
                 {
                 }
-
                 m_disposed_value = true;
             }
             // Call base class implementation.
@@ -57,10 +57,6 @@ namespace PaddleOCR
         {
             int img_num = img_list.Count;
             List<int> cls_image_shape = new List<int> { 3, 48, 192 };
-            if (m_use_gpu)
-            {
-                m_cls_batch_num = 1;
-            }
             for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += m_cls_batch_num)
             {
                 int end_img_no = Math.Min(img_num, beg_img_no + m_cls_batch_num);
