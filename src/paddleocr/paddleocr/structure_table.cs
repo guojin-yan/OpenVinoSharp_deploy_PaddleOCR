@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     using str_opt = RuntimeOption.StruTabRecOption;
     public class StruTabRec : Predictor
