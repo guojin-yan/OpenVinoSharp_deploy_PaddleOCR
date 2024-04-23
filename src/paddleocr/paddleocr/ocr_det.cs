@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenCvSharp;
 using OpenVinoSharp;
 
-namespace PaddleOCR
+namespace OpenVinoSharp.Extensions.model.PaddleOCR
 {
     using det_opt = RuntimeOption.DetOption;
     public class OcrDet : Predictor
@@ -18,13 +18,13 @@ namespace PaddleOCR
         string m_limit_type;
         int m_limit_side_len;
 
-
-        public OcrDet(string det_model, string? device = null, bool? use_gpu = null, bool? is_scale = null, 
-            float[]? mean = null, float[]? scale = null, float? db_thresh = null, float? db_box_thresh = null, 
-            long[]? input_size = null, string? db_score_mode = null, float? db_unclip_ratio = null, 
-            string? limit_type = null, int? limit_side_len = null)
-            : base(det_model, device ?? det_opt.device, mean ?? det_opt.mean, 
-                  scale ?? det_opt.scale, input_size??det_opt.input_size, true, use_gpu??det_opt.use_gpu)
+        public OcrDet(string det_model, string? device = null, bool? use_gpu = null, bool? is_dynamic = null,
+            bool? is_scale = null, float[]? mean = null, float[]? scale = null, float? db_thresh = null,
+            float? db_box_thresh = null, long[]? input_size = null, string? db_score_mode = null,
+            float? db_unclip_ratio = null, string? limit_type = null, int? limit_side_len = null)
+            : base(det_model, device ?? det_opt.device, mean ?? det_opt.mean,
+                  scale ?? det_opt.scale, input_size ?? det_opt.input_size, true,
+                  use_gpu ?? det_opt.use_gpu, is_dynamic ?? det_opt.is_dynamic)
         {
             m_det_db_thresh = db_thresh ?? det_opt.det_db_thresh;
             m_det_db_box_thresh = db_box_thresh ?? det_opt.det_db_box_thresh;
@@ -37,7 +37,8 @@ namespace PaddleOCR
 
         public OcrDet(OcrConfig config)
             : base(config.det_model_path, config.det_option.device, config.det_option.mean,
-                config.det_option.scale, config.det_option.input_size, true, config.det_option.use_gpu)
+                config.det_option.scale, config.det_option.input_size, true, config.det_option.use_gpu,
+                config.det_option.is_dynamic)
         {
             m_det_db_thresh = config.det_option.det_db_thresh;
             m_det_db_box_thresh = config.det_option.det_db_box_thresh;
