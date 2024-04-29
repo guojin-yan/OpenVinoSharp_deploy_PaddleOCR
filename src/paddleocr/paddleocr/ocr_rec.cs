@@ -98,10 +98,10 @@ namespace OpenVinoSharp.Extensions.model.PaddleOCR
                 }
                 float[] input_data = PreProcess.permute_batch(norm_img_batch);
 
-                DateTime start = DateTime.Now;
+                //DateTime start = DateTime.Now;
                 float[] predict_batch = infer(input_data, new long[] { batch_num, 3, m_input_size[2], batch_width });
-                DateTime end = DateTime.Now;
-                Console.WriteLine("time: " + (end - start).TotalMilliseconds);
+                //DateTime end = DateTime.Now;
+                //Console.WriteLine("time: " + (end - start).TotalMilliseconds);
 
 
                 int batch_len = (int)Math.Round((double)(predict_batch.Length / batch_num / m_output_shape.Last<long>()));

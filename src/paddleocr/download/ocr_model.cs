@@ -19,6 +19,14 @@ namespace OpenVinoSharp.Extensions.model.PaddleOCR
 
         public OcrModel() { }
 
+        public OcrModel(string det_model_path, string cls_model_path, string rec_model_path, string dict_path)
+        {
+            this.det_model_path = det_model_path;
+            this.cls_model_path = cls_model_path;
+            this.rec_model_path = rec_model_path;
+            this.dict_path = dict_path;
+        }
+
         public static async Task<OcrModel> GetOnlineOcrModel(Language language = Language.ch_PP_OCRv4,
             bool det = true, bool cls = true, bool rec = true) 
         {
