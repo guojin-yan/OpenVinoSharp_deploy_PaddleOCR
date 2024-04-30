@@ -56,7 +56,7 @@ namespace OpenVinoSharp.Extensions.model.PaddleOCR
         public void predict(List<Mat> img_list, List<int> lables, List<float> scores)
         {
             int img_num = img_list.Count;
-            List<int> cls_image_shape = new List<int> { 3, 48, 192 };
+            List<int> cls_image_shape = new List<int> { (int)m_input_size[1], (int)m_input_size[2], (int)m_input_size[3] };
             for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += m_cls_batch_num)
             {
                 int end_img_no = Math.Min(img_num, beg_img_no + m_cls_batch_num);
